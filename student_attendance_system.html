@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Attendance System</title>
+  <style>
+    body {
+      font-family:Arial,sans-serif;background-color:lightgray;padding:20px;
+    }
+    .container {
+      background-color:white; padding:25px;border-radius: 8px;max-width:600px;margin:auto; box-shadow: 0 0 8px black;
+    }
+    h1 {
+      text-align: center; color: navy;
+    }
+    input,button {
+      padding:10px;margin: 8px 0;border-radius:5px;font-size: 16px;width:100%;box-sizing: border-box;
+    }
+    input {
+      border:1px solid gray;
+    }
+    button {
+      background-color:blue;border: none;color: white;cursor: pointer;
+    }
+    button:hover {
+      background-color:darkblue;
+    }
+    .output {
+      margin-top:20px;background-color:white;padding:15px;border-radius:5px;
+    }
+    .output pre {
+      white-space: pre-wrap;word-wrap: break-word; color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Student attendance</h1>
+    <input type="text" id="rollInput" placeholder="Enter Roll Number" />
+    <button onclick="markAttendance()">Mark attendance</button>
+    <button onclick="viewAttendance()">View attendance</button>
+    <button onclick="viewStats()">View atats</button>
+    <div class="output" id="outputBox">
+      <pre id="outputText"></pre>
+    </div>
+  </div>
+  <script>
+    const attendanceMap = new Map();
+    function getTodayDate() {
+      const today = new Date();
+      return today.toISOString().split("T")[0];
+    }
+    function clearInput() {
+      document.getElementById("rollInput").value = "";
+    }
+
+    function markAttendance() {
+      const roll = document.getElementById("rollInput").value.trim();
+      if (!roll) {
+        return;
+      }
+      if(roll<=0){
+        return;
+      }
+      if(isNaN(roll)){
+        return;
+      }
+      const today = getTodayDate();
+      if (!attendanceMap.has(roll)) {
+        attendanceMap.set(roll, []);
+      }
+      const dates = attendanceMap.get(roll);
+      if (!dates.includes(today)) {
+        dates.push(today);
+      }
+      document.getElementById("outputText").textContent =
+        "Attendance marked for Roll No: " + roll + " on " + today;
+      clearInput();
+    }
+
+    function viewAttendance() {
+      const roll = document.getElementById("rollInput").value.trim();
+      if (!roll) {
+        return;
+      }
+      if(roll<=0){
+        return;
+      }
+      if(isNaN(roll)){
+        return;
+      }
+      const dates = attendanceMap.get(roll);
+      if (!dates || dates.length === 0) {
+        document.getElementById("outputText").textContent = "No attendance record found for Roll No: " + roll;
+      } else {
+        document.getElementById("outputText").textContent = "Attendance for Roll No: " + roll + "\nDates Present:\n" + dates.join("\n");
+      }
+      clearInput();
+    }
+
+    function viewStats() {
+      if (attendanceMap.size === 0) {
+        document.getElementById("outputText").textContent = "No attendance records available.";
+        return;}
+      let stats = "Attendance Stats:\n";
+      attendanceMap.forEach((dates, roll) => {
+        stats += "Roll No: " + roll + " - Days Present: " + dates.length + "\n";
+      });
+      document.getElementById("outputText").textContent = stats;
+      clearInput();
+    }
+  </script>
+</body>
+</html>
